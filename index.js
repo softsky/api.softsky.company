@@ -1,27 +1,29 @@
 const http = require('http');
 const https = require('https');
-const fs = require('fs');
 const Express = require("express");
 const BodyParser = require("body-parser");
 const Promise = require("bluebird");
 const MongoClient = require("mongodb").MongoClient;
 const rpc = require('request-promise-cache').use( require('bluebird').Promise )
 const _ = require('lodash');
+const LiqPay = require('sdk-NodeJS/lib/liqpay');
 
-require('dotenv-flow').config();
+var wt = require('webtask-tools');
 
 const DATABASE_NAME = "hacked";
 
-var BADOO_COLLECTION, USER_COLLECTION;
-const HTTP_PORT = process.env.HTTP_PORT
-const HTTPS_PORT = process.env.HTTPS_PORT;
+var BADOO_COLLECTION, USER_COLLECTION, PAYMENT_COLLECTION;
 
-var options = {
-    key: fs.readFileSync( './certs/api.softsky.company.key' ),
-    cert: fs.readFileSync( './certs/api.softsky.company.cert' ),
-    requestCert: false,
-    rejectUnauthorized: false
-};
+// if environment is not set, considering production
+process.env.NODE_ENV = process.env.NODE_ENV || 'production';
+var config = require('dotenv-flow').config();
+
+const HTTP_PORT = process.env.HTTP_PORT;
+const HTTPS_PORT = process.env.HTTPS_PORT;
+const LIQPAY_KEY = process.env.LIQPAY_KEY;
+const LIQPAY_PKEY = process.env.LIQPAY_PKEY;
+
+const liqpay = new LiqPay(LIQPAY_KEY, LIQPAY_PKEY)
 
 const cors = require('cors')
 var app = Express();
@@ -127,24 +129,54 @@ app.post("/user", (request, response) => {
   })
 });
 
+app.post("/paymentReceived", (request, response) => {
+  const sha1 = require('sha1');
+  console.log(request.body);
 
+  const signature = Buffer.from(sha1( LIQPAY_PKEY + request.body.data + LIQPAY_PKEY) ).toString('base64');
 
-module.exports = new Promise((resolve, reject) => {
-  console.log(process.env.NODE_ENV);
-  console.log(process.env.CONNECTION_URL);
-  MongoClient.connect(process.env.CONNECTION_URL, { useNewUrlParser: true }, (error, client) => {
-    if(error) {
-      reject(error);
-    }
+  console.log(Buffer.from(request.body.data,'base64').toString());
+  if(signature === request.body.signature){
+    console.log('Signature match', Buffer.from(request.body.data,'base64').toString());
+    PAYMENT_COLLECTION.
+      insertOne(request.body.data)
+      .catch(err => response.status(500).send(err))
+      .then(data => response.status(200).send(data))
+  } else {
+    console.log('Signature does not match', signature, request.body.signature);
+    response.status(500).send('Signatures donesn\'t match');
+  }
+});
 
-    database = client.db(DATABASE_NAME);
-    console.log("Connected to mongo database `" + DATABASE_NAME + "`");
-    BADOO_COLLECTION = Promise.promisifyAll(database.collection("badoo"));
-    USER_COLLECTION = Promise.promisifyAll(database.collection("users"));
-    // ONCE Mongo connected we can run server
+// console.log('wt', wt);
+// console.log('wt.webtaskContext', wt.webtaskContext);
+// console.log('wt.context', wt.context);
 
+const user = process.env.MONGO_USER;
+const password = process.env.MONGO_PASSWORD;
+const mongoUrl = eval("`" + (process.env || wt.webtaskContext.secrets).CONNECTION_URL + "`");
+console.log((process.env || wt.webtaskContext.secrets).CONNECTION_URL);
+console.log(mongoUrl);
+MongoClient.connect(mongoUrl, { useNewUrlParser: true }, (error, client) => {
+  if(error) {
+    console.error(error);
+  }
+
+  database = client.db(DATABASE_NAME);
+  console.log("Connected to mongo database `" + DATABASE_NAME + "`");
+  BADOO_COLLECTION = Promise.promisifyAll(database.collection("badoo"));
+  USER_COLLECTION = Promise.promisifyAll(database.collection("users"));
+  PAYMENT_COLLECTION = Promise.promisifyAll(database.collection("payments"));
+  // ONCE Mongo connected we can run server
+
+  if(HTTP_PORT)
     http.createServer(app).listen(HTTP_PORT, (it) => console.log(`Server on ${HTTP_PORT} started`));
+  if(HTTPS_PORT)
     https.createServer(app).listen(HTTPS_PORT, (it) => console.log(`Server on ${HTTPS_PORT} started`));
-    resolve(app);
-  });
-}); // for testing
+});
+
+if(HTTP_PORT || HTTPS_PORT){
+  module.exports = app;
+} else {
+  modue.exports = wt.fromExpress(app);
+}
