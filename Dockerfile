@@ -9,7 +9,7 @@ ADD .env .
 ADD .env.production .
 ADD index.js .
 ADD package.json .
-RUN npm install
+RUN yarn
 
 EXPOSE 8000
 EXPOSE 8443
