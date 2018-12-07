@@ -6,6 +6,7 @@ WORKDIR /opt/api
 
 ADD certs certs
 ADD .env .
+ADD .env.production .
 ADD index.js .
 ADD package.json .
 RUN npm install
