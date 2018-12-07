@@ -43,29 +43,18 @@ describe('API', () => {
   });
 
   test('POST /paymentReceived with well-crafted data', (done) => {
-    var LiqPay = require('liqpay');
-    var config = require('dotenv-flow').config();
+    const LIQPAY_DATA = {
+      signature: '6KC6bQKo6rf69odYYP625KsDNmE=',
+      data:
+      'eyJhY3Rpb24iOiJwYXkiLCJwYXltZW50X2lkIjo4ODkwODg4MzcsInN0YXR1cyI6ImZhaWx1cmUiLCJlcnJfY29kZSI6Ijk4NTkiLCJlcnJfZGVzY3JpcHRpb24iOiJJbnN1ZmZpY2llbnQgZnVuZHMiLCJ2ZXJzaW9uIjozLCJ0eXBlIjoiZG9uYXRlIiwicGF5dHlwZSI6ImNhcmQiLCJwdWJsaWNfa2V5IjoiaTEyNjY3MzUxMDM4IiwiYWNxX2lkIjo0MTQ5NjMsIm9yZGVyX2lkIjoiVDkyR1RZR0QxNTQ0MTg5ODk5ODkyNTMyIiwibGlxcGF5X29yZGVyX2lkIjoiOU03MllQNEExNTQ0MTkwMjMwMDMzNTk5IiwiZGVzY3JpcHRpb24iOiJMaXFQYXkgcGF5bWVudCIsInNlbmRlcl9waG9uZSI6IjM4MDk2NTk5NjMyOCIsInNlbmRlcl9maXJzdF9uYW1lIjoi0JDRgNGB0LXQvSIsInNlbmRlcl9sYXN0X25hbWUiOiLQk9GD0YbQsNC7Iiwic2VuZGVyX2NhcmRfbWFzazIiOiI1MTY4NzQqODgiLCJzZW5kZXJfY2FyZF9iYW5rIjoicGIiLCJzZW5kZXJfY2FyZF90eXBlIjoibWMiLCJzZW5kZXJfY2FyZF9jb3VudHJ5Ijo4MDQsImlwIjoiNS41OC4yMzUuMjIxIiwiYW1vdW50IjoxLjAsImN1cnJlbmN5IjoiVUFIIiwic2VuZGVyX2NvbW1pc3Npb24iOjAuMCwicmVjZWl2ZXJfY29tbWlzc2lvbiI6MC4wMywiYWdlbnRfY29tbWlzc2lvbiI6MC4wLCJhbW91bnRfZGViaXQiOjEuMCwiYW1vdW50X2NyZWRpdCI6MS4wLCJjb21taXNzaW9uX2RlYml0IjowLjAsImNvbW1pc3Npb25fY3JlZGl0IjowLjAzLCJjdXJyZW5jeV9kZWJpdCI6IlVBSCIsImN1cnJlbmN5X2NyZWRpdCI6IlVBSCIsInNlbmRlcl9ib251cyI6MC4wLCJhbW91bnRfYm9udXMiOjAuMCwibXBpX2VjaSI6IjciLCJpc18zZHMiOmZhbHNlLCJjcmVhdGVfZGF0ZSI6MTU0NDE5MDIwNDg3NiwiZW5kX2RhdGUiOjE1NDQxOTM4MzM5NzEsInRyYW5zYWN0aW9uX2lkIjo4ODkwODg4MzcsImNvZGUiOiI5ODU5In0='
+    };
 
-    var liqpay = new LiqPay(process.env.LIQPAY_KEY, process.env.LIQPAY_PKEY);
-    liqpay.api("request", {
-      "action"                : "subscribe",
-      "version"               : "3",
-      "phone"                 : "380950000001",
-      "amount"                : "1",
-      "currency"              : "USD",
-      "description"           : "description text",
-      "order_id"              : "order_id_1",
-      "subscribe"             : "1",
-      "subscribe_date_start"  : new Date(),
-      "subscribe_periodicity" : "month",
-      "card"                  : "4731195301524634",
-      "card_exp_month"        : "03",
-      "card_exp_year"         : "22",
-      "card_cvv"              : "111"
-    }, function( json ){
-      console.log( json.status );
-      done();
-    });
+    return chai.request(server)
+      .post('/paymentReceived')
+      .send(LIQPAY_DATA)
+      .then((res) => {
+        expect(res).to.have.status(200);
+      })
 
   });
 

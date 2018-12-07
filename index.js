@@ -131,15 +131,14 @@ app.post("/user", (request, response) => {
 
 app.post("/paymentReceived", (request, response) => {
   const sha1 = require('sha1');
-  console.log(request.body);
-
+  const data = JSON.parse(Buffer.from(request.body.data, 'base64').toString());
   const signature = Buffer.from(sha1( LIQPAY_PKEY + request.body.data + LIQPAY_PKEY) ).toString('base64');
 
-  console.log(Buffer.from(request.body.data,'base64').toString());
+  console.log(signature, request.body.signature);
   if(signature === request.body.signature){
-    console.log('Signature match', Buffer.from(request.body.data,'base64').toString());
+    console.log('Signature match', data);
     PAYMENT_COLLECTION.
-      insertOne(request.body.data)
+      insertOne(data)
       .catch(err => response.status(500).send(err))
       .then(data => response.status(200).send(data))
   } else {
