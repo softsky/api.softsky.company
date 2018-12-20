@@ -4,7 +4,7 @@ MAINTAINER Arsen A.Gutsal <a.gutsal@softsky.com.ua>
 
 WORKDIR /opt/api
 
-ADD certs certs
+ADD src src
 ADD .env .
 ADD .env.production .
 ADD index.js .
