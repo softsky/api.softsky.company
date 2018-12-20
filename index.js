@@ -32,7 +32,7 @@ const mongoUrl = eval("`" + (process.env || wt.webtaskContext.secrets).CONNECTIO
 // console.log(mongoUrl);
 MongoClient.connect(mongoUrl, { useNewUrlParser: true }, (error, client) => {
   if(error) {
-    console.error(error);
+    throw new Error(error);
   }
 
   database = client.db(DATABASE_NAME);
