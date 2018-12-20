@@ -44,7 +44,6 @@ class Payment {
   postPaymentReceived(request, response){
     const sha1 = require('sha1');
     const data = JSON.parse(Buffer.from(request.body.data, 'base64').toString());
-    //let signature = Buffer.from(sha1(LIQPAY_PKEY + request.body.data + LIQPAY_PKEY)).toString('base64');
     var crypto = require('crypto')
     , shasum = crypto.createHash('sha1');
     shasum.update(LIQPAY_PKEY + request.body.data + LIQPAY_PKEY);
