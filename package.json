@@ -18,7 +18,7 @@
     "https": "^1.0.0",
     "imap": "^0.8.19",
     "imap-scan-box": "^1.0.3",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "mongodb": "^3.2.7",
     "request": "^2.88.0",
     "request-promise-cache": "^2.0.1",
