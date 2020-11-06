@@ -6,28 +6,28 @@
   "author": "Arsen A. Gutsal (a.gutsal@softsky.company)",
   "license": "MIT",
   "dependencies": {
-    "bluebird": "^3.5.5",
+    "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
-    "clean-css": "^4.1.11",
+    "clean-css": "^4.2.3",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv-flow": "^0.1.0",
     "express": "^4.17.1",
-    "handlebars": "4.1.0",
+    "handlebars": "^4.7.6",
     "http": "^0.0.0",
     "https": "^1.0.0",
     "imap": "^0.8.19",
     "imap-scan-box": "^1.0.3",
-    "lodash": "^4.17.19",
-    "mongodb": "^3.2.7",
-    "request": "^2.88.0",
+    "lodash": "^4.17.20",
+    "mongodb": "^3.6.2",
+    "request": "^2.88.2",
     "request-promise-cache": "^2.0.1",
-    "webtask-tools": "^3.4.0"
+    "webtask-tools": "^3.4.1"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-http": "^4.3.0",
-    "jest": "^24.8.0"
+    "jest": "^24.9.0"
   }
 }
