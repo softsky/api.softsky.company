@@ -20,7 +20,7 @@
     "imap": "^0.8.19",
     "imap-scan-box": "^1.0.3",
     "kind-of": "^6.0.3",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "mongodb": "^3.6.2",
     "request": "^2.88.2",
     "request-promise-cache": "^2.0.1",
